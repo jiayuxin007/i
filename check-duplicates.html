@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>检查重复单词</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+        .duplicate-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-left: 4px solid #667eea;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>检查单词重复情况</h1>
+    <button onclick="checkDuplicates()" style="padding: 10px 20px; font-size: 16px; cursor: pointer;">
+        开始检查
+    </button>
+    <div id="result" class="result" style="display: none;"></div>
+
+    <script src="js/vocabulary-data.js"></script>
+    <script>
+        async function checkDuplicates() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<p>正在加载数据...</p>';
+
+            try {
+                // 使用vocabularyData来加载数据
+                const success = await vocabularyData.loadData();
+                if (!success) {
+                    resultDiv.innerHTML = '<p style="color: red;">数据加载失败，请确保使用本地服务器打开页面（如 http://localhost:8000）</p>';
+                    return;
+                }
+                
+                const data = vocabularyData.data;
+                
+                // 统计每个单词出现的等级
+                const wordLevels = {};
+                
+                data.forEach(item => {
+                    const word = item.word;
+                    if (!wordLevels[word]) {
+                        wordLevels[word] = [];
+                    }
+                    if (!wordLevels[word].includes(item.cefr_level)) {
+                        wordLevels[word].push(item.cefr_level);
+                    }
+                });
+
+                // 找出在多个等级中出现的单词
+                const duplicates = [];
+                Object.keys(wordLevels).forEach(word => {
+                    if (wordLevels[word].length > 1) {
+                        duplicates.push({
+                            word: word,
+                            levels: wordLevels[word].sort()
+                        });
+                    }
+                });
+
+                // 显示结果
+                if (duplicates.length === 0) {
+                    resultDiv.innerHTML = '<p style="color: green; font-size: 18px; padding: 20px;">✓ 没有发现重复单词，每个单词只属于一个等级。</p>';
+                } else {
+                    resultDiv.innerHTML = `
+                        <h2 style="color: #f44336;">⚠ 发现 ${duplicates.length} 个单词属于多个等级：</h2>
+                        <p style="color: #666; margin-bottom: 15px;">这些单词在JSON文件中被标记为多个不同的等级</p>
+                        <div style="max-height: 600px; overflow-y: auto; border: 1px solid #ddd; border-radius: 8px; padding: 10px;">
+                            ${duplicates.map(item => `
+                                <div class="duplicate-item">
+                                    <strong style="color: #667eea;">${item.word}</strong> - 等级: <span style="color: #f44336;">${item.levels.join(', ')}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+
+                // 统计信息
+                const stats = {
+                    total: data.length,
+                    unique: Object.keys(wordLevels).length,
+                    duplicates: duplicates.length,
+                    levelCounts: {}
+                };
+
+                data.forEach(item => {
+                    const level = item.cefr_level;
+                    stats.levelCounts[level] = (stats.levelCounts[level] || 0) + 1;
+                });
+
+                resultDiv.innerHTML += `
+                    <hr style="margin: 20px 0;">
+                    <h3>统计信息：</h3>
+                    <ul>
+                        <li>总单词数（含重复）：${stats.total}</li>
+                        <li>唯一单词数：${stats.unique}</li>
+                        <li>重复单词数：${stats.duplicates}</li>
+                        <li>各等级单词数：
+                            <ul>
+                                ${Object.keys(stats.levelCounts).sort().map(level => 
+                                    `<li>${level}: ${stats.levelCounts[level]}</li>`
+                                ).join('')}
+                            </ul>
+                        </li>
+                    </ul>
+                `;
+
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: red;">错误: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

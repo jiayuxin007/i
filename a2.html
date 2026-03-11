@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A2词汇练习</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-button {
+            background: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #667eea;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .back-button:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .main-container {
+            display: flex;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .left-panel {
+            flex: 1;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .left-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .progress-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .progress-ring {
+            position: relative;
+            width: 200px;
+            height: 200px;
+        }
+
+        .progress-ring svg {
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring circle {
+            fill: none;
+            stroke-width: 12;
+        }
+
+        .progress-ring .background-circle {
+            stroke: #e0e0e0;
+        }
+
+        .progress-ring .progress-circle {
+            stroke: #667eea;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.3s ease;
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .progress-percentage {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .menu-button {
+            background: #667eea;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 20px;
+            font-size: 18px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .menu-button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .right-panel {
+            flex: 1;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .mode-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .mode-tab {
+            flex: 1;
+            padding: 12px 16px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #666;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            cursor: pointer;
+            transition: color 0.2s, border-color 0.2s;
+        }
+
+        .mode-tab:hover {
+            color: #667eea;
+        }
+
+        .mode-tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .control-group {
+            margin-bottom: 25px;
+        }
+
+        .control-label {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .select-box {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+            color: #333;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .select-box:hover {
+            border-color: #667eea;
+        }
+
+        .select-box:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .start-button {
+            width: 100%;
+            background: #667eea;
+            border: none;
+            border-radius: 10px;
+            padding: 18px;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            margin-top: 20px;
+        }
+
+        .start-button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .start-button:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <button class="back-button" onclick="window.location.href='levels.html'">← 返回</button>
+        </div>
+        <div class="user-info">
+            <span class="username" id="usernameDisplay"></span>
+            <button class="logout-button" onclick="handleLogout()">登出</button>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="left-panel">
+            <div class="left-title">A2词汇练习</div>
+            
+            <div class="progress-container">
+                <div class="progress-ring">
+                    <svg width="200" height="200">
+                        <circle class="background-circle" cx="100" cy="100" r="85"></circle>
+                        <circle class="progress-circle" cx="100" cy="100" r="85" 
+                                stroke-dasharray="534" 
+                                stroke-dashoffset="534"></circle>
+                    </svg>
+                    <div class="progress-text">
+                        <div>已完成：</div>
+                        <div class="progress-percentage">0%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="progress-stats" style="text-align: center; margin-bottom: 30px; font-size: 18px; color: #333;">
+                <span id="progressStats">0/0</span>
+            </div>
+
+            <div class="button-group">
+                <button class="menu-button" onclick="window.location.href='all-words.html?level=A2'">全部单词</button>
+                <button class="menu-button" onclick="window.location.href='wrong-words.html?level=A2'">错题本</button>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <div class="mode-tabs">
+                <button type="button" class="mode-tab active" data-mode="test">单词测验</button>
+                <button type="button" class="mode-tab" data-mode="dictation">单词默写</button>
+            </div>
+            <div class="control-group">
+                <label class="control-label">顺序：</label>
+                <select class="select-box" id="orderSelect">
+                    <option value="sequential">顺序</option>
+                    <option value="random">乱序</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">数量：</label>
+                <select class="select-box" id="countSelect">
+                    <option value="10">10</option>
+                    <option value="30">30</option>
+                    <option value="50">50</option>
+                    <option value="80">80</option>
+                    <option value="100" selected>100</option>
+                    <option value="150">150</option>
+                    <option value="200">200</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">词性：</label>
+                <select class="select-box" id="posSelect">
+                    <option value="all">全部</option>
+                    <option value="loading" disabled>加载中...</option>
+                </select>
+            </div>
+
+            <button class="start-button" id="startButton">开始</button>
+        </div>
+    </div>
+
+    <script src="js/vocabulary-data.js"></script>
+    <script src="js/storage-manager.js"></script>
+    <script>
+        const currentLevel = 'A2';
+        
+        // 更新进度圆环
+        function updateProgress(percentage) {
+            const circle = document.querySelector('.progress-circle');
+            const text = document.querySelector('.progress-percentage');
+            const circumference = 2 * Math.PI * 85; // r = 85
+            const offset = circumference - (percentage / 100) * circumference;
+            
+            circle.style.strokeDashoffset = offset;
+            text.textContent = Math.round(percentage) + '%';
+        }
+
+        // 更新统计信息
+        function updateStats() {
+            const stats = storageManager.getProgressStats(currentLevel);
+            const total = vocabularyData.getWordCountByLevel(currentLevel);
+            const completed = stats.completed;
+            
+            // 更新数字显示
+            document.getElementById('progressStats').textContent = `${completed}/${total}`;
+            
+            // 更新圆环百分比
+            const percentage = total > 0 ? (completed / total) * 100 : 0;
+            updateProgress(percentage);
+        }
+
+        // 加载词性下拉框
+        async function loadPosOptions() {
+            try {
+                console.log('开始加载词汇数据...');
+                const success = await vocabularyData.loadData();
+                if (success) {
+                    const posList = vocabularyData.getPosByLevel(currentLevel);
+                    const posSelect = document.getElementById('posSelect');
+                    
+                    console.log(`${currentLevel} 等级词性列表:`, posList);
+                    console.log(`找到 ${posList.length} 个词性`);
+                    
+                    // 清空现有选项（保留"全部"）
+                    posSelect.innerHTML = '<option value="all">全部</option>';
+                    
+                    // 添加词性选项（显示中英文对照）
+                    if (posList.length > 0) {
+                        posList.forEach(pos => {
+                            const option = document.createElement('option');
+                            option.value = pos;
+                            const translation = vocabularyData.getPosTranslation(pos);
+                            option.textContent = translation !== pos ? `${pos} (${translation})` : pos;
+                            posSelect.appendChild(option);
+                        });
+                        console.log('词性下拉框已填充');
+                    } else {
+                        console.warn('未找到词性数据');
+                        // 添加一个提示选项
+                        const option = document.createElement('option');
+                        option.value = '';
+                        option.textContent = '暂无数据';
+                        option.disabled = true;
+                        posSelect.appendChild(option);
+                    }
+                    
+                    // 数据加载成功后更新统计
+                    updateStats();
+                } else {
+                    console.error('无法加载词汇数据');
+                    const posSelect = document.getElementById('posSelect');
+                    const option = document.createElement('option');
+                    option.value = '';
+                    option.textContent = '数据加载失败（请使用本地服务器打开）';
+                    option.disabled = true;
+                    posSelect.appendChild(option);
+                }
+            } catch (error) {
+                console.error('加载词性选项时出错:', error);
+                const posSelect = document.getElementById('posSelect');
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = '加载出错: ' + error.message;
+                option.disabled = true;
+                posSelect.appendChild(option);
+            }
+        }
+
+        function getActiveMode() {
+            const active = document.querySelector('.mode-tab.active');
+            return active ? active.getAttribute('data-mode') : 'test';
+        }
+
+        function startTest() {
+            const order = document.getElementById('orderSelect').value;
+            const count = document.getElementById('countSelect').value;
+            const pos = document.getElementById('posSelect').value;
+            
+            const completedWords = storageManager.getCompletedWords(currentLevel);
+            const words = vocabularyData.getWordsByLevel(currentLevel, {
+                order: order,
+                count: count,
+                pos: pos,
+                excludeCompleted: true,
+                completedWords: completedWords
+            });
+            
+            if (words.length === 0) {
+                alert('没有可测试的单词！所有符合条件的单词都已完成。');
+                return;
+            }
+            
+            const params = new URLSearchParams({
+                level: currentLevel,
+                order: order,
+                count: count,
+                pos: pos || 'all'
+            });
+            
+            window.location.href = `test.html?${params.toString()}`;
+        }
+
+        function startDictation() {
+            const order = document.getElementById('orderSelect').value;
+            const count = document.getElementById('countSelect').value;
+            const pos = document.getElementById('posSelect').value;
+            
+            const words = vocabularyData.getWordsByLevel(currentLevel, {
+                order: order,
+                count: count,
+                pos: pos || 'all'
+            });
+            
+            if (words.length === 0) {
+                alert('没有可默写的单词！请调整筛选条件。');
+                return;
+            }
+            
+            const params = new URLSearchParams({
+                level: currentLevel,
+                order: order,
+                count: count,
+                pos: pos || 'all'
+            });
+            
+            window.location.href = `dictation.html?${params.toString()}`;
+        }
+
+        document.querySelectorAll('.mode-tab').forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                document.querySelectorAll('.mode-tab').forEach(function (t) { t.classList.remove('active'); });
+                this.classList.add('active');
+            });
+        });
+
+        // 初始化
+        updateProgress(0);
+        
+        document.getElementById('startButton').addEventListener('click', function () {
+            if (getActiveMode() === 'dictation') {
+                startDictation();
+            } else {
+                startTest();
+            }
+        });
+        
+        // 页面加载完成后加载词性选项
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadPosOptions);
+        } else {
+            loadPosOptions();
+        }
+    </script>
+    <script src="js/user-manager.js"></script>
+    <script>
+        // 检查登录状态
+        if (!userManager.isLoggedIn()) {
+            window.location.href = 'login.html';
+        } else {
+            // 显示用户名
+            const username = userManager.getCurrentUser();
+            document.getElementById('usernameDisplay').textContent = `用户：${username}`;
+        }
+
+        // 登出功能
+        function handleLogout() {
+            if (confirm('确定要登出吗？')) {
+                userManager.logout();
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+</body>
+</html>

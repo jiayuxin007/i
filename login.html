@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录/注册</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            font-weight: bold;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .submit-button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .submit-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 13px;
+            margin-top: 5px;
+            min-height: 20px;
+        }
+
+        .success-message {
+            color: #27ae60;
+            font-size: 13px;
+            margin-top: 5px;
+            min-height: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="title">意大利语单词练习</div>
+        
+        <div class="tabs">
+            <div class="tab active" id="loginTab" onclick="switchTab('login')">登录</div>
+            <div class="tab" id="registerTab" onclick="switchTab('register')">注册</div>
+            <div class="tab" id="cloudTab" onclick="switchTab('cloud')">云端同步</div>
+            <div class="tab" id="dataTab" onclick="switchTab('data')">数据管理</div>
+        </div>
+
+        <!-- 登录表单 -->
+        <div id="loginForm">
+            <div class="form-group">
+                <label class="form-label">用户名</label>
+                <input type="text" class="form-input" id="loginUsername" placeholder="请输入用户名">
+            </div>
+            <div class="form-group">
+                <label class="form-label">密码</label>
+                <input type="password" class="form-input" id="loginPassword" placeholder="请输入密码">
+            </div>
+            <div class="error-message" id="loginError"></div>
+            <button class="submit-button" onclick="handleLogin()">登录</button>
+        </div>
+
+        <!-- 注册表单 -->
+        <div id="registerForm" class="hidden">
+            <div class="form-group">
+                <label class="form-label">用户名</label>
+                <input type="text" class="form-input" id="registerUsername" placeholder="至少3个字符">
+            </div>
+            <div class="form-group">
+                <label class="form-label">密码</label>
+                <input type="password" class="form-input" id="registerPassword" placeholder="至少6个字符">
+            </div>
+            <div class="form-group">
+                <label class="form-label">确认密码</label>
+                <input type="password" class="form-input" id="registerPasswordConfirm" placeholder="请再次输入密码">
+            </div>
+            <div class="error-message" id="registerError"></div>
+            <div class="success-message" id="registerSuccess"></div>
+            <button class="submit-button" onclick="handleRegister()">注册</button>
+        </div>
+
+        <!-- 云端同步表单 -->
+        <div id="cloudForm" class="hidden">
+            <div style="background: #f0f7ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #667eea;">
+                <div style="font-size: 14px; color: #333; line-height: 1.6;">
+                    <strong>什么是云端同步？</strong><br>
+                    启用云端同步后，您的学习数据（账号信息、学习进度、错题本）将自动保存到GitHub云端，即使清理浏览器缓存也不会丢失数据，还可以在不同设备间同步。
+                    <br><br>
+                    <strong style="color: #27ae60;">✓ 只需点击一次按钮</strong> - 自动授权并启用云端同步，之后数据会自动同步，无需额外操作。
+                </div>
+            </div>
+
+            <!-- 一键授权界面 -->
+            <div id="oauthContainer">
+                <button class="submit-button" onclick="handleOneClickAuth()" id="oneClickAuthBtn" style="background: #24292e; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <svg width="20" height="20" fill="white" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    <span>使用 GitHub 一键启用云端同步</span>
+                </button>
+
+                <!-- 设备授权流程界面 -->
+                <div id="deviceAuthContainer" style="display: none; margin-top: 20px; padding: 20px; background: #f9f9f9; border-radius: 8px;">
+                    <div style="text-align: center; margin-bottom: 15px;">
+                        <div style="font-size: 18px; font-weight: bold; margin-bottom: 10px;">请完成以下步骤：</div>
+                    </div>
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 2px solid #667eea;">
+                        <div style="font-size: 16px; font-weight: bold; margin-bottom: 8px; color: #667eea;">步骤 1：访问授权页面</div>
+                        <a id="authLink" href="#" target="_blank" style="color: #667eea; font-size: 14px; word-break: break-all;">点击这里打开GitHub授权页面</a>
+                    </div>
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 2px solid #667eea;">
+                        <div style="font-size: 16px; font-weight: bold; margin-bottom: 8px; color: #667eea;">步骤 2：输入授权代码</div>
+                        <div style="font-size: 24px; font-weight: bold; letter-spacing: 5px; text-align: center; padding: 10px; background: #f0f0f0; border-radius: 5px; font-family: monospace;" id="userCodeDisplay"></div>
+                        <div style="font-size: 12px; color: #666; margin-top: 5px; text-align: center;">在新打开的页面中输入上面的代码</div>
+                    </div>
+                    <div style="text-align: center; color: #666; font-size: 14px;">
+                        <div id="authStatus">正在等待您完成授权...</div>
+                        <div id="authProgress" style="margin-top: 10px; font-size: 12px; color: #999;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 高级选项（手动输入Token） -->
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e0e0e0;">
+                <div style="font-size: 12px; color: #666; margin-bottom: 10px; cursor: pointer;" onclick="toggleAdvancedOptions()">
+                    <span id="advancedToggle">▶ 高级选项：手动输入Token</span>
+                </div>
+                <div id="advancedOptions" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label">GitHub Personal Access Token</label>
+                        <input type="password" class="form-input" id="githubToken" placeholder="请输入GitHub Token">
+                        <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                            如何获取Token？<a href="https://github.com/settings/tokens/new" target="_blank" style="color: #667eea;">点击这里创建</a>
+                            <br>在创建Token时，请勾选 <code>gist</code> 权限
+                        </div>
+                    </div>
+                    <button class="submit-button" onclick="handleEnableCloudSync()" id="enableCloudBtn" style="background: #6c757d;">使用Token启用</button>
+                </div>
+            </div>
+
+            <div id="cloudStatus" style="margin-bottom: 15px; padding: 10px; border-radius: 8px; display: none;">
+                <div id="cloudStatusText" style="font-size: 14px;"></div>
+            </div>
+
+            <div class="error-message" id="cloudError"></div>
+            <div class="success-message" id="cloudSuccess"></div>
+
+            <button class="submit-button" onclick="handleDisableCloudSync()" id="disableCloudBtn" style="background: #e74c3c; margin-top: 10px; display: none;">禁用云端同步</button>
+            <button class="submit-button" onclick="handleSyncFromCloud()" id="syncFromCloudBtn" style="background: #27ae60; margin-top: 10px; display: none;">手动从云端同步</button>
+            <div style="font-size: 12px; color: #666; margin-top: 8px; text-align: center; display: none;" id="autoSyncNote">
+                提示：数据会自动同步，"手动从云端同步"仅用于强制获取云端最新数据
+            </div>
+        </div>
+
+        <!-- 数据管理表单 -->
+        <div id="dataForm" class="hidden">
+            <div style="background: #f0f7ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #667eea;">
+                <div style="font-size: 14px; color: #333; line-height: 1.6;">
+                    <strong>数据备份与恢复</strong><br>
+                    您可以导出所有数据到本地文件，也可以从备份文件恢复数据。这样即使清理浏览器缓存，也可以恢复您的学习进度。
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">导出数据</label>
+                <div style="font-size: 14px; color: #666; margin-bottom: 10px;">
+                    点击下方按钮，将您的所有数据（账号信息、学习进度、错题本）导出为JSON文件并下载到本地。
+                </div>
+                <button class="submit-button" onclick="handleExportData()" style="background: #27ae60;">
+                    📥 导出数据到文件
+                </button>
+            </div>
+
+            <div class="form-group" style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0;">
+                <label class="form-label">导入数据</label>
+                <div style="font-size: 14px; color: #666; margin-bottom: 10px;">
+                    选择之前导出的备份文件，恢复您的所有数据。
+                </div>
+                <input type="file" id="importFileInput" accept=".json" style="display: none;" onchange="handleImportData(event)">
+                <button class="submit-button" onclick="document.getElementById('importFileInput').click()" style="background: #3498db;">
+                    📤 从文件导入数据
+                </button>
+                <div style="font-size: 12px; color: #666; margin-top: 8px;">
+                    注意：导入数据会合并现有数据，不会删除现有账号
+                </div>
+            </div>
+
+            <div class="error-message" id="dataError"></div>
+            <div class="success-message" id="dataSuccess"></div>
+        </div>
+    </div>
+
+    <script src="js/user-manager.js"></script>
+    <script src="js/supabase-storage-manager.js"></script>
+    <script src="js/cloud-storage-manager.js"></script>
+    <script src="js/data-file-manager.js"></script>
+    <script>
+        // 如果已登录，跳转到选择等级页
+        if (userManager.isLoggedIn()) {
+            window.location.href = 'levels.html';
+        }
+
+        // 切换标签
+        function switchTab(tab) {
+            const loginTab = document.getElementById('loginTab');
+            const registerTab = document.getElementById('registerTab');
+            const cloudTab = document.getElementById('cloudTab');
+            const dataTab = document.getElementById('dataTab');
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const cloudForm = document.getElementById('cloudForm');
+            const dataForm = document.getElementById('dataForm');
+            const loginError = document.getElementById('loginError');
+            const registerError = document.getElementById('registerError');
+            const registerSuccess = document.getElementById('registerSuccess');
+            const cloudError = document.getElementById('cloudError');
+            const cloudSuccess = document.getElementById('cloudSuccess');
+            const dataError = document.getElementById('dataError');
+            const dataSuccess = document.getElementById('dataSuccess');
+
+            // 清空错误信息
+            loginError.textContent = '';
+            registerError.textContent = '';
+            registerSuccess.textContent = '';
+            cloudError.textContent = '';
+            cloudSuccess.textContent = '';
+            dataError.textContent = '';
+            dataSuccess.textContent = '';
+
+            // 重置所有标签和表单
+            loginTab.classList.remove('active');
+            registerTab.classList.remove('active');
+            cloudTab.classList.remove('active');
+            dataTab.classList.remove('active');
+            loginForm.classList.add('hidden');
+            registerForm.classList.add('hidden');
+            cloudForm.classList.add('hidden');
+            dataForm.classList.add('hidden');
+
+            if (tab === 'login') {
+                loginTab.classList.add('active');
+                loginForm.classList.remove('hidden');
+            } else if (tab === 'register') {
+                registerTab.classList.add('active');
+                registerForm.classList.remove('hidden');
+            } else if (tab === 'cloud') {
+                cloudTab.classList.add('active');
+                cloudForm.classList.remove('hidden');
+                updateCloudSyncUI();
+            } else if (tab === 'data') {
+                dataTab.classList.add('active');
+                dataForm.classList.remove('hidden');
+            }
+        }
+
+        // 更新云端同步UI
+        function updateCloudSyncUI() {
+            const isEnabled = typeof cloudStorageManager !== 'undefined' && cloudStorageManager.isCloudSyncEnabled();
+            const tokenInput = document.getElementById('githubToken');
+            const enableBtn = document.getElementById('enableCloudBtn');
+            const disableBtn = document.getElementById('disableCloudBtn');
+            const syncFromCloudBtn = document.getElementById('syncFromCloudBtn');
+            const oneClickBtn = document.getElementById('oneClickAuthBtn');
+            const oauthContainer = document.getElementById('oauthContainer');
+            const deviceAuthContainer = document.getElementById('deviceAuthContainer');
+            const cloudStatus = document.getElementById('cloudStatus');
+            const cloudStatusText = document.getElementById('cloudStatusText');
+
+            if (isEnabled) {
+                tokenInput.value = ''; // 不显示token
+                tokenInput.disabled = true;
+                enableBtn.style.display = 'none';
+                oneClickBtn.style.display = 'none';
+                deviceAuthContainer.style.display = 'none';
+                disableBtn.style.display = 'block';
+                syncFromCloudBtn.style.display = 'block';
+                document.getElementById('autoSyncNote').style.display = 'block';
+                cloudStatus.style.display = 'block';
+                cloudStatus.style.background = '#d4edda';
+                cloudStatus.style.border = '1px solid #c3e6cb';
+                cloudStatusText.innerHTML = '✓ 云端同步已启用<br><small>您的数据会自动同步到GitHub云端，无需手动操作</small>';
+            } else {
+                tokenInput.value = '';
+                tokenInput.disabled = false;
+                enableBtn.style.display = 'block';
+                oneClickBtn.style.display = 'block';
+                oneClickBtn.disabled = false;
+                deviceAuthContainer.style.display = 'none';
+                disableBtn.style.display = 'none';
+                syncFromCloudBtn.style.display = 'none';
+                document.getElementById('autoSyncNote').style.display = 'none';
+                cloudStatus.style.display = 'none';
+            }
+        }
+
+        // 处理登录
+        async function handleLogin() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
+
+            errorDiv.textContent = '';
+
+            if (!username || !password) {
+                errorDiv.textContent = '请输入用户名和密码';
+                return;
+            }
+
+            // ⚠️ 重要：先尝试从云端恢复数据（这样新设备也能登录）
+            if (typeof supabaseStorageManager !== 'undefined' && supabaseStorageManager.isConfigured()) {
+                try {
+                    console.log('📥 登录前先从云端恢复数据（支持跨设备登录）...');
+                    const restoreResult = await supabaseStorageManager.restoreAllDataFromCloud();
+                    if (restoreResult.success) {
+                        console.log('✅ 云端数据恢复成功，现在可以验证登录');
+                    } else {
+                        console.warn('⚠️ 云端数据恢复失败（可能云端没有数据）:', restoreResult.message);
+                    }
+                } catch (error) {
+                    console.warn('⚠️ 从云端恢复数据时出错:', error);
+                }
+            }
+            
+            // 如果启用了GitHub云端同步，也先恢复数据
+            if (typeof cloudStorageManager !== 'undefined' && cloudStorageManager.isCloudSyncEnabled()) {
+                try {
+                    await cloudStorageManager.syncFromCloud();
+                } catch (error) {
+                    console.warn('⚠️ GitHub云端同步失败:', error);
+                }
+            }
+            
+            // 现在尝试登录（云端数据已恢复，应该能找到用户）
+            const result = await userManager.login(username, password);
+            if (result.success) {
+                // 登录成功后，再次同步到云端（确保数据最新）
+                if (typeof supabaseStorageManager !== 'undefined' && supabaseStorageManager.isConfigured()) {
+                    try {
+                        await supabaseStorageManager.syncAllDataToCloud();
+                    } catch (error) {
+                        console.warn('⚠️ 登录后同步到云端失败:', error);
+                    }
+                }
+                // 登录成功，跳转到选择等级页
+                window.location.href = 'levels.html';
+            } else {
+                errorDiv.textContent = result.message;
+            }
+        }
+
+        // 处理注册
+        async function handleRegister() {
+            const username = document.getElementById('registerUsername').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const passwordConfirm = document.getElementById('registerPasswordConfirm').value;
+            const errorDiv = document.getElementById('registerError');
+            const successDiv = document.getElementById('registerSuccess');
+
+            errorDiv.textContent = '';
+            successDiv.textContent = '';
+
+            // 验证密码确认
+            if (password !== passwordConfirm) {
+                errorDiv.textContent = '两次输入的密码不一致';
+                return;
+            }
+
+            const result = await userManager.register(username, password);
+            if (result.success) {
+                successDiv.textContent = result.message;
+                // 延迟跳转，让用户看到成功消息
+                setTimeout(() => {
+                    window.location.href = 'levels.html';
+                }, 1000);
+            } else {
+                errorDiv.textContent = result.message;
+            }
+        }
+
+        // 一键授权（使用Device Flow）
+        async function handleOneClickAuth() {
+            const errorDiv = document.getElementById('cloudError');
+            const successDiv = document.getElementById('cloudSuccess');
+            const oneClickBtn = document.getElementById('oneClickAuthBtn');
+            const oauthContainer = document.getElementById('oauthContainer');
+            const deviceAuthContainer = document.getElementById('deviceAuthContainer');
+
+            errorDiv.textContent = '';
+            successDiv.textContent = '';
+            
+            // 禁用按钮
+            oneClickBtn.disabled = true;
+            oneClickBtn.textContent = '正在启动授权...';
+
+            try {
+                // 启动Device Flow
+                const deviceFlowResult = await cloudStorageManager.startDeviceFlow();
+                
+                if (!deviceFlowResult.success) {
+                    errorDiv.textContent = deviceFlowResult.message || '启动授权失败';
+                    oneClickBtn.disabled = false;
+                    oneClickBtn.innerHTML = '<svg width="20" height="20" fill="white" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg><span>使用 GitHub 一键启用云端同步</span>';
+                    return;
+                }
+
+                // 显示授权界面
+                const authLink = document.getElementById('authLink');
+                const userCodeDisplay = document.getElementById('userCodeDisplay');
+                const authStatus = document.getElementById('authStatus');
+                const authProgress = document.getElementById('authProgress');
+
+                authLink.href = deviceFlowResult.verificationUri;
+                userCodeDisplay.textContent = deviceFlowResult.userCode;
+                
+                // 打开授权页面
+                window.open(deviceFlowResult.verificationUri, '_blank');
+                
+                // 显示授权界面
+                oneClickBtn.style.display = 'none';
+                deviceAuthContainer.style.display = 'block';
+                
+                authStatus.textContent = '正在等待您完成授权...';
+                authProgress.textContent = '请在打开的页面中输入上面的代码，然后点击"Authorize"按钮';
+
+                // 开始轮询获取token
+                const tokenResult = await cloudStorageManager.pollForToken(
+                    deviceFlowResult.deviceCode, 
+                    deviceFlowResult.interval
+                );
+
+                if (tokenResult.success) {
+                    // 保存token
+                    cloudStorageManager.setGithubToken(tokenResult.token);
+
+                    // 尝试创建或获取Gist
+                    const syncResult = await cloudStorageManager.syncToCloud();
+                    
+                    if (syncResult.success) {
+                        successDiv.textContent = '✓ 云端同步已启用！您的数据将自动同步到云端，无需额外操作。';
+                        updateCloudSyncUI();
+                        deviceAuthContainer.style.display = 'none';
+                        oneClickBtn.style.display = 'none';
+                    } else {
+                        errorDiv.textContent = syncResult.message || '启用云端同步失败';
+                        cloudStorageManager.setGithubToken(null);
+                        deviceAuthContainer.style.display = 'none';
+                        oneClickBtn.style.display = 'block';
+                        oneClickBtn.disabled = false;
+                        oneClickBtn.innerHTML = '<svg width="20" height="20" fill="white" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg><span>使用 GitHub 一键启用云端同步</span>';
+                    }
+                } else {
+                    errorDiv.textContent = tokenResult.message || '授权失败，请重试';
+                    deviceAuthContainer.style.display = 'none';
+                    oneClickBtn.style.display = 'block';
+                    oneClickBtn.disabled = false;
+                    oneClickBtn.innerHTML = '<svg width="20" height="20" fill="white" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg><span>使用 GitHub 一键启用云端同步</span>';
+                }
+            } catch (error) {
+                errorDiv.textContent = '操作失败: ' + error.message;
+                deviceAuthContainer.style.display = 'none';
+                oneClickBtn.style.display = 'block';
+                oneClickBtn.disabled = false;
+                oneClickBtn.innerHTML = '<svg width="20" height="20" fill="white" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg><span>使用 GitHub 一键启用云端同步</span>';
+            }
+        }
+
+        // 切换高级选项
+        function toggleAdvancedOptions() {
+            const advancedOptions = document.getElementById('advancedOptions');
+            const advancedToggle = document.getElementById('advancedToggle');
+            if (advancedOptions.style.display === 'none') {
+                advancedOptions.style.display = 'block';
+                advancedToggle.textContent = '▼ 高级选项：手动输入Token';
+            } else {
+                advancedOptions.style.display = 'none';
+                advancedToggle.textContent = '▶ 高级选项：手动输入Token';
+            }
+        }
+
+        // 启用云端同步（手动输入Token）
+        async function handleEnableCloudSync() {
+            const token = document.getElementById('githubToken').value.trim();
+            const errorDiv = document.getElementById('cloudError');
+            const successDiv = document.getElementById('cloudSuccess');
+
+            errorDiv.textContent = '';
+            successDiv.textContent = '';
+
+            if (!token) {
+                errorDiv.textContent = '请输入GitHub Token';
+                return;
+            }
+
+            try {
+                // 保存token
+                cloudStorageManager.setGithubToken(token);
+
+                // 尝试创建或获取Gist
+                const result = await cloudStorageManager.syncToCloud();
+                
+                if (result.success) {
+                    successDiv.textContent = '云端同步已启用！您的数据将自动同步到云端，无需额外操作。';
+                    updateCloudSyncUI();
+                } else {
+                    errorDiv.textContent = result.message || '启用云端同步失败';
+                    cloudStorageManager.setGithubToken(null);
+                }
+            } catch (error) {
+                errorDiv.textContent = '操作失败: ' + error.message;
+                cloudStorageManager.setGithubToken(null);
+            }
+        }
+
+        // 禁用云端同步
+        function handleDisableCloudSync() {
+            if (confirm('确定要禁用云端同步吗？禁用后数据将只保存在本地浏览器中。')) {
+                cloudStorageManager.clearCloudSync();
+                updateCloudSyncUI();
+                document.getElementById('cloudSuccess').textContent = '云端同步已禁用';
+            }
+        }
+
+        // 从云端同步
+        async function handleSyncFromCloud() {
+            const errorDiv = document.getElementById('cloudError');
+            const successDiv = document.getElementById('cloudSuccess');
+
+            errorDiv.textContent = '';
+            successDiv.textContent = '正在同步...';
+
+            try {
+                const result = await cloudStorageManager.syncFromCloud();
+                
+                if (result.success) {
+                    successDiv.textContent = '云端同步成功！';
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    errorDiv.textContent = result.message || '云端同步失败';
+                    successDiv.textContent = '';
+                }
+            } catch (error) {
+                errorDiv.textContent = '同步失败: ' + error.message;
+                successDiv.textContent = '';
+            }
+        }
+
+        // 导出数据
+        function handleExportData() {
+            const errorDiv = document.getElementById('dataError');
+            const successDiv = document.getElementById('dataSuccess');
+
+            errorDiv.textContent = '';
+            successDiv.textContent = '';
+
+            try {
+                const result = dataFileManager.exportAllData();
+                
+                if (result.success) {
+                    successDiv.textContent = '数据导出成功！文件已下载到您的设备。';
+                } else {
+                    errorDiv.textContent = result.message || '导出失败';
+                }
+            } catch (error) {
+                errorDiv.textContent = '导出失败: ' + error.message;
+            }
+        }
+
+        // 导入数据
+        async function handleImportData(event) {
+            const file = event.target.files[0];
+            const errorDiv = document.getElementById('dataError');
+            const successDiv = document.getElementById('dataSuccess');
+
+            errorDiv.textContent = '';
+            successDiv.textContent = '';
+
+            if (!file) {
+                return;
+            }
+
+            if (!file.name.endsWith('.json')) {
+                errorDiv.textContent = '请选择JSON格式的备份文件';
+                return;
+            }
+
+            successDiv.textContent = '正在导入数据...';
+
+            try {
+                const result = await dataFileManager.importData(file);
+                
+                if (result.success) {
+                    successDiv.textContent = '数据导入成功！页面将在2秒后刷新...';
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    errorDiv.textContent = result.message || '导入失败';
+                    successDiv.textContent = '';
+                }
+            } catch (error) {
+                errorDiv.textContent = '导入失败: ' + error.message;
+                successDiv.textContent = '';
+            }
+
+            // 清空文件输入
+            event.target.value = '';
+        }
+
+        // 支持回车键提交
+        document.getElementById('loginUsername').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('loginPassword').focus();
+            }
+        });
+
+        document.getElementById('loginPassword').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleLogin();
+            }
+        });
+
+        document.getElementById('registerUsername').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('registerPassword').focus();
+            }
+        });
+
+        document.getElementById('registerPassword').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('registerPasswordConfirm').focus();
+            }
+        });
+
+        document.getElementById('registerPasswordConfirm').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleRegister();
+            }
+        });
+    </script>
+</body>
+</html>

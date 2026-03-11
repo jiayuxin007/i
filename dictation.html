@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>单词默写</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            padding: 8px 12px 12px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            flex-shrink: 0;
+        }
+
+        .back-button {
+            background: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 14px;
+            font-size: 14px;
+            color: #667eea;
+            cursor: pointer;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: #f0f0f0;
+            transform: translateY(-1px);
+        }
+
+        .user-info { display: flex; align-items: center; gap: 8px; }
+
+        .username {
+            color: white;
+            font-size: 13px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .logout-button {
+            background: rgba(255,255,255,0.9);
+            color: #667eea;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .logout-button:hover { background: white; }
+
+        .container {
+            flex: 1;
+            min-height: 0;
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 12px 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: auto;
+        }
+
+        .dictation-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 8px 12px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+
+        .dictation-stats-info { display: flex; gap: 20px; }
+
+        .dictation-stat-item { text-align: center; }
+
+        .dictation-stat-label { font-size: 11px; color: #666; margin-bottom: 2px; }
+
+        .dictation-stat-value { font-size: 18px; font-weight: bold; color: #333; }
+
+        .dictation-stat-value.correct { color: #4caf50; }
+
+        .dictation-stat-value.wrong { color: #f44336; }
+
+        .dictation-info-bar {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 8px;
+            flex-shrink: 0;
+        }
+
+        #dictationContent { flex-shrink: 0; }
+
+        .dictation-meanings {
+            margin-bottom: 12px;
+            padding: 10px 12px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .dictation-meaning-row {
+            margin-bottom: 4px;
+            font-size: 15px;
+        }
+
+        .dictation-meaning-row:last-child { margin-bottom: 0; }
+
+        .dictation-meaning-label { color: #666; margin-right: 6px; }
+
+        .dictation-meaning-value { color: #333; }
+
+        .dictation-partial-word {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 2px;
+            margin: 12px 0;
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: #333;
+            font-family: 'Consolas', monospace;
+        }
+
+        .dictation-char-show {
+            display: inline-block;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .dictation-char-input {
+            width: 28px;
+            height: 34px;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            border: none;
+            border-bottom: 2px solid #667eea;
+            background: #f5f5f5;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .dictation-char-input:focus {
+            background: #e8ebfa;
+        }
+
+        .dictation-char-input:disabled {
+            background: #e0e0e0;
+            border-bottom-color: #999;
+        }
+
+        .dictation-confirm-row {
+            text-align: center;
+            margin-top: 12px;
+        }
+
+        .dictation-confirm-btn {
+            padding: 10px 24px;
+            font-size: 15px;
+            font-weight: bold;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dictation-confirm-btn:hover:not(:disabled) {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .dictation-confirm-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .dictation-result-panel {
+            margin-top: 12px;
+            padding: 12px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            display: none;
+            position: relative;
+            padding-top: 44px;
+            flex: 1;
+            min-height: 0;
+            overflow: auto;
+        }
+
+        .dictation-result-panel.show { display: flex; flex-direction: column; }
+
+        .dictation-result-buttons {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dictation-prev-btn {
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 13px;
+            color: #667eea;
+            cursor: pointer;
+        }
+
+        .dictation-prev-btn:hover { background: #f0f0ff; }
+
+        .dictation-next-btn {
+            background: #667eea;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 16px;
+            font-size: 13px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            margin-left: auto;
+        }
+
+        .dictation-next-btn:hover {
+            background: #5568d3;
+            transform: translateY(-1px);
+        }
+
+        .dictation-result-header { text-align: center; margin-bottom: 10px; flex-shrink: 0; }
+
+        .dictation-result-icon { font-size: 40px; margin-bottom: 4px; }
+
+        .dictation-result-icon.correct { color: #4caf50; }
+
+        .dictation-result-icon.wrong { color: #f44336; }
+
+        .dictation-result-title { font-size: 18px; font-weight: bold; }
+
+        .dictation-result-title.correct { color: #4caf50; }
+
+        .dictation-result-title.wrong { color: #f44336; }
+
+        .dictation-word-details {
+            background: white;
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            flex-shrink: 0;
+        }
+
+        .detail-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+            flex-wrap: wrap;
+        }
+
+        .detail-row:last-child { margin-bottom: 0; }
+
+        .detail-item { display: flex; align-items: center; gap: 4px; }
+
+        .detail-label { font-size: 13px; color: #666; white-space: nowrap; }
+
+        .detail-value { font-size: 14px; color: #333; }
+
+        .detail-item-full {
+            width: 100%;
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px solid #eee;
+        }
+
+        .detail-item-full .detail-label { margin-bottom: 2px; }
+
+        .detail-item-full .detail-value { font-size: 13px; line-height: 1.4; }
+
+        .loading {
+            text-align: center;
+            padding: 24px 16px;
+            color: #666;
+            font-size: 16px;
+        }
+
+        .dictation-complete {
+            text-align: center;
+            padding: 24px 16px;
+        }
+
+        .dictation-complete-title {
+            font-size: 22px;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .dictation-complete-stats { font-size: 18px; color: #667eea; margin-bottom: 6px; }
+
+        .dictation-complete-detail { font-size: 14px; color: #666; margin-bottom: 16px; }
+
+        .dictation-back-btn {
+            padding: 10px 24px;
+            font-size: 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .dictation-back-btn:hover { background: #5568d3; }
+
+        .dictation-result-footer {
+            text-align: center;
+            margin-top: 10px;
+            flex-shrink: 0;
+        }
+
+        .dictation-youtube-link {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #ff0000;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .dictation-youtube-link:hover {
+            background: #cc0000;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="back-button" id="backButton">← 返回</button>
+        <div class="user-info">
+            <span class="username" id="usernameDisplay"></span>
+            <button class="logout-button" onclick="handleLogout()">登出</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="dictation-stats">
+            <div class="dictation-stats-info">
+                <div class="dictation-stat-item">
+                    <div class="dictation-stat-label">本次默写总数</div>
+                    <div class="dictation-stat-value" id="dictationTotalCount">0</div>
+                </div>
+                <div class="dictation-stat-item">
+                    <div class="dictation-stat-label">正确</div>
+                    <div class="dictation-stat-value correct" id="dictationCorrectCount">0</div>
+                </div>
+                <div class="dictation-stat-item">
+                    <div class="dictation-stat-label">错误</div>
+                    <div class="dictation-stat-value wrong" id="dictationWrongCount">0</div>
+                </div>
+            </div>
+        </div>
+
+        <p class="dictation-info-bar" id="dictationInfoBar"></p>
+
+        <div id="dictationContent">
+            <div class="loading">加载中...</div>
+        </div>
+
+        <div id="dictationWordDisplay" style="display: none;"></div>
+
+        <div class="dictation-result-panel" id="dictationResultPanel">
+            <div class="dictation-result-buttons">
+                <button type="button" class="dictation-prev-btn" id="dictationPrevButton" style="display: none;">← 上一个</button>
+                <button type="button" class="dictation-next-btn" id="dictationNextButton">下一个 →</button>
+            </div>
+            <div class="dictation-result-header">
+                <div class="dictation-result-icon" id="dictationResultIcon"></div>
+                <div class="dictation-result-title" id="dictationResultTitle"></div>
+            </div>
+            <div class="dictation-word-details" id="dictationWordDetails"></div>
+            <div class="dictation-result-footer">
+                <a href="#" id="dictationYoutubeLink" class="dictation-youtube-link" target="_blank" style="display: none;">
+                    📺 在 YouTube 上查看该单词释义
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/user-manager.js"></script>
+    <script src="js/vocabulary-data.js"></script>
+    <script src="js/storage-manager.js"></script>
+    <script src="js/llm-api.js"></script>
+    <script src="js/translation-helper.js?v=2"></script>
+    <script src="js/dictation-controller.js"></script>
+    <script>
+        if (!userManager.isLoggedIn()) {
+            window.location.href = 'login.html';
+            throw new Error('redirect');
+        }
+
+        document.getElementById('usernameDisplay').textContent = '用户：' + userManager.getCurrentUser();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const level = urlParams.get('level') || 'A1';
+        const order = urlParams.get('order') || 'sequential';
+        const count = urlParams.get('count') || '100';
+        const pos = urlParams.get('pos') || 'all';
+
+        document.getElementById('dictationInfoBar').textContent =
+            level + ' · ' + (order === 'random' ? '乱序' : '顺序') + ' · 共 ' + count + ' 个' + (pos !== 'all' ? ' · 词性筛选' : '');
+
+        document.getElementById('backButton').addEventListener('click', function () {
+            window.location.href = level.toLowerCase() + '.html';
+        });
+
+        function handleLogout() {
+            if (confirm('确定要登出吗？')) {
+                userManager.logout();
+                window.location.href = 'login.html';
+            }
+        }
+
+        let dictationController = null;
+
+        (async function initDictation() {
+            dictationController = new DictationController({ level, order, count, pos });
+
+            document.getElementById('dictationNextButton').addEventListener('click', function () {
+                dictationController.nextWord();
+            });
+            document.getElementById('dictationPrevButton').addEventListener('click', function () {
+                dictationController.prevWord();
+            });
+
+            await dictationController.init();
+        })();
+    </script>
+</body>
+</html>
