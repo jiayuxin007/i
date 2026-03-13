@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>单词详情</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .username {
+            color: #333;
+            font-size: 14px;
+        }
+
+        .logout-button {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 18px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-button:hover {
+            background: #c0392b;
+        }
+
+        .word-section {
+            margin-bottom: 25px;
+        }
+
+        .word-title {
+            font-size: 42px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .detail-item {
+            margin-bottom: 18px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-content {
+            font-size: 18px;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .detail-content strong {
+            color: #667eea;
+        }
+
+        .example-sentence {
+            font-size: 18px;
+            color: #333;
+            line-height: 1.8;
+            font-style: italic;
+            padding: 15px;
+            background: #f9f9f9;
+            border-left: 4px solid #667eea;
+            border-radius: 4px;
+            margin-top: 8px;
+        }
+
+        .youtube-link {
+            display: inline-block;
+            background: #ff0000;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+        }
+
+        .youtube-link:hover {
+            background: #cc0000;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .youtube-link::before {
+            content: "📺 ";
+            margin-right: 5px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #666;
+            font-size: 18px;
+        }
+
+        .error {
+            text-align: center;
+            padding: 60px;
+            color: #e74c3c;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <button class="back-button" onclick="goBack()">← 返回</button>
+            </div>
+            <div class="user-info">
+                <span class="username" id="usernameDisplay"></span>
+                <button class="logout-button" onclick="handleLogout()">登出</button>
+            </div>
+        </div>
+
+        <div id="wordContent">
+            <div class="loading">加载中...</div>
+        </div>
+    </div>
+
+    <script src="js/user-manager.js"></script>
+    <script src="js/vocabulary-data.js"></script>
+    <script src="js/storage-manager.js"></script>
+    <script src="js/llm-api.js"></script>
+    <script src="js/translation-helper.js?v=2"></script>
+    <script src="js/word-detail-controller.js"></script>
+    <script>
+        // 检查登录状态
+        if (!userManager.isLoggedIn()) {
+            window.location.href = 'login.html';
+        } else {
+            // 显示用户名
+            const username = userManager.getCurrentUser();
+            document.getElementById('usernameDisplay').textContent = `用户：${username}`;
+        }
+
+        // 登出功能
+        function handleLogout() {
+            if (confirm('确定要登出吗？')) {
+                userManager.logout();
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+</body>
+</html>
