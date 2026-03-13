@@ -13,7 +13,8 @@ class TranslationHelper {
             bravo: '好；能干；勇敢',
             cola: '可乐',
             acqua: '水',
-            ha: '有'
+            ha: '有',
+            abitare:'居住'
         };
     }
 
