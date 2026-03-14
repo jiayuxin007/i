@@ -27,7 +27,8 @@ class TranslationHelper {
             foglio:'纸，页',
             rosa:'粉色的',
             leggere:'阅读',
-            pulire:'清洁、打扫'
+            pulire:'清洁、打扫',
+            potere:'能、可以'
         };
     }
 
