@@ -42,8 +42,8 @@ class TranslationHelper {
             gentile:'有礼貌的、友善的',
             cinema:'电影院',
             sognare:'做梦',
-            porta:'门'
-            
+            porta:'门',
+            piazza:'广场'
         };
     }
 
