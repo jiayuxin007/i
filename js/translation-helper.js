@@ -44,7 +44,8 @@ class TranslationHelper {
             sognare:'做梦',
             porta:'门',
             piazza:'广场',
-            piacere:'喜欢'
+            piacere:'喜欢',
+            partire:'离开'
         };
     }
 
