@@ -20,7 +20,8 @@ class TranslationHelper {
             bibita:'饮料',
             cappotto:'外套，大衣',
             abitare:'居住',
-            cucinare:'做饭'
+            cucinare:'做饭',
+            bicchiere:'杯子'
         };
     }
 
