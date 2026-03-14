@@ -17,7 +17,8 @@ class TranslationHelper {
             acqua: '水',
             ha: '有',
             zeta:'z',
-            bibita:'饮料'
+            bibita:'饮料',
+            cappotto:'外套，大衣'
         };
     }
 
