@@ -43,7 +43,8 @@ class TranslationHelper {
             cinema:'电影院',
             sognare:'做梦',
             porta:'门',
-            piazza:'广场'
+            piazza:'广场',
+            piacere:'喜欢'
         };
     }
 
