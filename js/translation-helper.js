@@ -41,7 +41,8 @@ class TranslationHelper {
             freddo:'冷的',
             gentile:'有礼貌的、友善的',
             cinema:'电影院',
-            sognare:'做梦'
+            sognare:'做梦',
+            porta:'门'
             
         };
     }
