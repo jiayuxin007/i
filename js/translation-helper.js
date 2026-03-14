@@ -30,7 +30,8 @@ class TranslationHelper {
             pulire:'清洁、打扫',
             potere:'能、可以',
             sentire:'听、感觉',
-            ogni:'每个'
+            ogni:'每个',
+            papa:'爸爸'
         };
     }
 
