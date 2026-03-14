@@ -36,7 +36,8 @@ class TranslationHelper {
             effe:'f',
             destro:'右边的',
             destra:'右边',
-            acca:'h'
+            acca:'h',
+            allenare:'训练'
         };
     }
 
