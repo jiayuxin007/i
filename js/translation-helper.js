@@ -22,7 +22,8 @@ class TranslationHelper {
             abitare:'居住',
             cucinare:'做饭',
             bicchiere:'杯子',
-            autunno:'秋天'
+            autunno:'秋天',
+            libreria:'书店'
         };
     }
 
