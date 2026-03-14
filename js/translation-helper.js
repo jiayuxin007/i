@@ -25,7 +25,8 @@ class TranslationHelper {
             autunno:'秋天',
             libreria:'书店',
             foglio:'纸，页',
-            rosa:'粉色的'
+            rosa:'粉色的',
+            leggere:'阅读'
         };
     }
 
