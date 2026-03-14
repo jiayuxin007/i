@@ -21,7 +21,8 @@ class TranslationHelper {
             cappotto:'外套，大衣',
             abitare:'居住',
             cucinare:'做饭',
-            bicchiere:'杯子'
+            bicchiere:'杯子',
+            autunno:'秋天'
         };
     }
 
