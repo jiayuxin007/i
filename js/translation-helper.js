@@ -24,7 +24,8 @@ class TranslationHelper {
             bicchiere:'杯子',
             autunno:'秋天',
             libreria:'书店',
-            foglio:'纸，页'
+            foglio:'纸，页',
+            rosa:'粉色的'
         };
     }
 
