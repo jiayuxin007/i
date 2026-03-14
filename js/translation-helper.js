@@ -23,7 +23,8 @@ class TranslationHelper {
             cucinare:'做饭',
             bicchiere:'杯子',
             autunno:'秋天',
-            libreria:'书店'
+            libreria:'书店',
+            foglio:'纸，页'
         };
     }
 
