@@ -33,7 +33,9 @@ class TranslationHelper {
             ogni:'每个',
             papa:'爸爸',
             è:'是',
-            effe:'f'
+            effe:'f',
+            destro:'右边的',
+            destra:'右边'
         };
     }
 
