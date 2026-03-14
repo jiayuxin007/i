@@ -16,7 +16,8 @@ class TranslationHelper {
             cola: '可乐',
             acqua: '水',
             ha: '有',
-            zeta:'z'
+            zeta:'z',
+            bibita:'饮料'
         };
     }
 
