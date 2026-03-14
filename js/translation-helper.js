@@ -39,7 +39,8 @@ class TranslationHelper {
             acca:'h',
             allenare:'训练',
             freddo:'冷的',
-            gentile:'有礼貌的、友善的'
+            gentile:'有礼貌的、友善的',
+            cinema:'电影院'
             
         };
     }
