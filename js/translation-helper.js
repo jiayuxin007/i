@@ -26,7 +26,8 @@ class TranslationHelper {
             libreria:'书店',
             foglio:'纸，页',
             rosa:'粉色的',
-            leggere:'阅读'
+            leggere:'阅读',
+            pulire:'清洁、打扫'
         };
     }
 
