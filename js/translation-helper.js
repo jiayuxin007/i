@@ -31,7 +31,8 @@ class TranslationHelper {
             potere:'能、可以',
             sentire:'听、感觉',
             ogni:'每个',
-            papa:'爸爸'
+            papa:'爸爸',
+            è:'是'
         };
     }
 
