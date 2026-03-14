@@ -28,7 +28,8 @@ class TranslationHelper {
             rosa:'粉色的',
             leggere:'阅读',
             pulire:'清洁、打扫',
-            potere:'能、可以'
+            potere:'能、可以',
+            sentire:'听、感觉'
         };
     }
 
