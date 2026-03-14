@@ -18,7 +18,8 @@ class TranslationHelper {
             ha: '有',
             zeta:'z',
             bibita:'饮料',
-            cappotto:'外套，大衣'
+            cappotto:'外套，大衣',
+            abitare:'居住'
         };
     }
 
