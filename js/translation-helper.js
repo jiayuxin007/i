@@ -37,7 +37,9 @@ class TranslationHelper {
             destro:'右边的',
             destra:'右边',
             acca:'h',
-            allenare:'训练'
+            allenare:'训练',
+            freddo:'冷的'
+            
         };
     }
 
